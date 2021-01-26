@@ -164,3 +164,118 @@ Kotilin Coroutines.
 -So we just created our first co routine.
  I know, by now you might have a lot of questions. There are a lot of
  new words. CoroutineScope, dispatchers, launch.
+
+
+##Coroutines fundamentals:
+
+-we can launch many corouintes, there can be even hundred coroutines running at the same time. But, by default
+ coroutines don’t help us to keep track of them, or keep track of any work that’s being done by them.
+
+-If we do not manage them very carefully , there can be coroutine leasks in the memory.
+ Resources will be unnecessarily waste and it will also affect to the performance of the application.
+ But lucky for us , Kotlin programming language creators has already fixed that problem .
+
+-In Kotlin Koroutines, we have to, we must start all the coroutines within a scope. Using the properties
+ belong to the scope we can easily keep track of coroitnes, cancel coroitnes and handle errors or exceptions
+ thrown by the coroutines.
+
+-So, this CoroutineScope is the interface we have used to provide the scope to our coroutine.
+
+-In Kotlin Koroutines
+ we have another scope interface called GlobalScope. Global scope is used to launch top-level coroutines
+ which are operating on the whole application lifetime . In android development we very rarely use
+ GlobalScope .
+
+-Both of These scopes also acts as a reference to the coroutine context.
+ So, this is the context of our CoroutineScope. For this context
+ 
+-we have only used a dispatcher as the context. If we want to use an explicit job instance, 
+ we can include the name of the Job instance plus a Dispatcher as the context for the scope .
+
+-The plus operator can be used to merge multiple coroutine contexts
+ We will study about Jobs ,very soon. 
+
+-Dispatcher describes the kind of thread where the coroutine
+ should be run. In Kotlin Android structured concurrency,
+
+-it is always recommended to start coroutines using main thread and then switch to background threads. 
+
+-To lauch coroutines in the main thread
+ we use Dispatcher.Main.
+ We also have IO dispatcher.
+ Dispatcers.IO, Dispatchers.Default and
+ Dispatchers.Unconfined.
+
+-So, If we use Dispatcher.Main , the coroutine will run in the Main Thread. In android we also call it UI thread.
+ You know, there is only one Main or UI thread.
+
+-So if you create 10 coroutines within a scope with Dispatchers.Main as the context,
+ All those 10 coroutines will run in the same Main thread.
+
+-We only use main dispatcher for small, light weight tasks like call to a ui function, call to a suspending
+ function or to get updates from the livedata. In structured concurrency , Recommended best practice is
+ always starting a coroutine from the Main thread and later switching it to a 
+ background thread . We will learn all those things very soon.
+
+-If we use Dispatchers.IO, the coroutine will run in a background thread from a shared pool of on-demand
+ created threads. We use this IO dispatcher to work with local database, communicate with network and to work with files. 
+ 
+-Default dispatcher is used for CPU intensive tasks such as sorting a list of data with 10000 list items , 
+ or parsing a huge JSON file with details of 100000 movies.
+
+-Dispatcher.Uncomfined is a dispatcher used with GlobalScope.
+
+-If we use Dispatchers.Unconfined Coroutine will run on the current thread, but if it is suspended and resumed,
+ it will run on whichever thread that the suspending function is running on. It is not recommended to use
+ this dispatcher for Android Development.
+
+-Apart from these 4 dispatchers coroutines API also facilitates us to convert executors in to dispatchers
+ as well as to create our own custom dispatchers. Creators of libraries like room and retrofit, have
+ been using there own custom dispatchers to execute operations in a separate background thread.
+
+-Therefore , you will see, when we use retrofit and room, we can easily use them from the main dispatcher.
+ Without writing codes to change the thread. As android developers most of the time we use Dispatchers.Main and Dispathcers.IO . 
+
+-Now, Let’s go back to our code again. This launch is the coroutine builder. Coroutine builders are 
+ extension functions of coroutine scopes, which are used to launch a new coroutine . 
+
+-There are four main coroutine builders. Launch, async, produce and runblocking. 
+
+-Launch coroutine builder launches a new co routine without blocking the current thread.
+
+-This builder returns an instance of job which can be used as a reference to the co routine. We can use that
+ We can use that returned job instance to keep track of the co routine and to cancel the coroutine. 
+ We use launch builder for coroutines that does not have any result as the return value. 
+ This builder returns a Job instance but does not return any computational result,
+
+-we cannot use this coroutine to calculate something and get the final answer as the returned value.
+
+-If we want get such result as a returned value we should use async coroutine builder.
+ Not only that, the main specialty of async builder is that it allows us to launch coroutines in paralle. 
+
+-Async builder also launches a new coroutine without blocking the current thread.
+
+-This builder returns an instance of deferred of type of the result. Actually deferred interface is
+ an extension of job interface. So we can use it like we use job for things link cancelling a coroutine.
+
+-If our result is a string value the type would be string, If our result is an Int value
+ This type would be Int. Like that. To get the value from the deferred object,
+
+-we need to invoke its await() function. 
+
+-In android development Launch and Async builders are the coroutine builders
+ we use most of the time. But we also have Produce and runBlocking builders. 
+
+-Produce builder is for coroutines which produces a stream of elements .
+ This builder returns an instance of ReceiveChannel. 
+
+-In Android development we use runblocking builder , mostly for testing.
+ Not like other coroutines, the coroutine we create using this builder will block the thread until its execution is over. 
+ And it returns a result which we can directly use.
+
+-Well, what is structured concurrency. Structured Concurrency is a set of lauguage features and best practices
+ introduced for Kotlin Coroutines to avoid corutines leaks and manage coroutines productively.
+
+-We have a separate lesson dedicated to introduce structured concurrency . And we will do a lot of coding
+ following structured concurrency during this course. But during these earlier lessons,
+ until you get familiar with basic concepts we will just do our coding in a unstructured manner.
