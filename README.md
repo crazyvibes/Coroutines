@@ -424,3 +424,179 @@ Kotilin Coroutines.
 
 -If you want . So, we use suspending functions to avoid thread blockings and hence to provide smooth, uninterrupted experience
 
+How Suspending Functions Work?
+-A suspending function doesn't block a thread,
+ but only suspends the coroutine itself. (one thread can have more coroutines)
+
+-The thread is returned to the pool while the coroutine is waiting, and when the waiting is done,
+ the coroutine resumes on a free thread in the pool.
+ 
+ 
+ 
+##Async and await
+
+
+-Let’s assume we have to get result from four online data sources and combine them all to show the
+ final result to the user.
+
+-First task takes 10 seconds
+
+-Second task takes 15 seconds
+
+-Third task takes 12 seconds. 
+
+-And the fourth task takes 13 seconds.
+
+-We could easily write codes to download these data sets one by one.
+
+-But if we do so, user has to wait at least 50 seconds to see the final result.
+
+-That’s too much waiting. Some users may get angry and uninstall the app. What if we can download all these data in parallel. 
+
+-If we can do so we will be able to show the result in just 15 seconds time.
+
+-Writing codes to download these data in parallel and combine them at the end is called parallel
+ decomposition. Parallel decomposition was not that easy.
+
+-We had to write complex, long , difficult to read, difficult to maintain codes for that. But with Kotlin coroutines,
+ we can do parallel decomposition very easily.
+
+-Let me show you how to do it.
+
+-For this lesson , I created a new Android studio project .
+
+-I also added coroutines core and courotines android dependencies to the gradle.
+
+-For this lesson , for the demonstration of the theory. let’s just assume we have two remote stores .
+
+-We need get stock count form both of them using different URLs and show the final stock count to the
+ user.
+
+-Now I am going to write a function to get the first stock count. private suspend
+
+-We are going to use coroutines to execute these functions . So let’s make them suspendable. Fun.
+
+-Let’s name this function as getStock1 And this should return
+ the stock count as an integral value.
+
+-To simulate the delay , that can happened as a result of data processing in the server let’s just use delay
+ function. We need to add the time in milliseconds.
+
+-I am delaying the result for 10 seconds. Let’s return some value as the stock count.
+
+-Then, we should add a log to see how this works.
+
+-To the second function we can just copy this one and chage values.
+
+-Name should be get stock2. Let’s delay this for 8 seconds.
+
+-This should be stock 2. Let’s change the stock count also. Now let’s lauch a coroutine in the oncreate function. 
+ CoroutineScope for the context, during previous lessons
+
+-We added the thread name with the word Dispatchers. Like here we can add Dispatcher.IO .
+
+-I intentionally did that to teach you about dispatchers. But to save time , if you want , you can just Add
+ IO here.
+
+-only the name of the thread
+
+-The difference is, when we add only IO , class has to import kotlinx.coroutines
+ .Dispatchers.IO package.
+
+-If we add Dispatcher.IO our class has to import
+ kotlinx.coroutines
+ dot Dispatchers . All right.
+
+-Now, launch the coroutine.
+
+-Get the value of the stock1.
+
+-Then Get the value of the stock2.
+ And then, add them
+
+-For now. Let’s show the total in a log.
+
+-I am adding another log to show the start of the calculation process.
+
+-This is not parallel decomposition.
+
+-We haven’t implemented it yet.
+
+-This is sequential decomposition. What will happen if we run this app ?
+
+-This getStock1 function will execute first. It will wait 10 seconds and return its stock value.
+
+-After that , after 10 seconds execution of getStock2 fucntoin will be started. 
+ It will wait another 8 seconds and return its stock value.
+
+-Then finally tatal will be calculated.
+
+-So, let’s just very quickly run that and see it in action .
+ And here we go , calculation started.
+
+-count of the Stock1 returned after 10 seconds.
+
+-Count of the stock2 returned after 8 seconds. And final total value loged. You can study the exact
+ time gap from here. it took 18 seconds and 33 milliseconds.
+
+-Now, I am going to show you how to do this in parallel way. To do that we need to use async coroutine builder.
+ Async and Launch are the coroutine builders we use for Android Development most of the times. 
+
+-Launch coroutine buider returns a job. But async coroutine builder returns
+ an instance of Deferred.
+
+-We can use that Deferred value by invoking its await function.
+
+-I am going to make this function calls from within a async coroutine builder. Async
+
+-Let’s take this function call to the inside of the builder. Do the same for the
+ getStock2 function call.
+
+-To get the returned value we need to invoke await function of each async builder.
+
+-Now if we run this app these two functions will execute parrallely.
+
+-here, getStock1 function takes 10 seconds. But getStock2 funciton takes only 8 seconds to return the
+ count value.
+
+-Therefore if these two functions execute in parallel, getStock2 funciton should return its value
+ first.
+
+-Let’s run the app and see the log results.
+ Calculation started.
+
+-Count of the Stock2 returned after 8 seconds. Count of the stock1 returned after 10 seconds. And
+ final total value loged.
+
+-So instead of 18 seconds this entire process now only takes 10 seconds.
+
+-Thanks to paralle decomposition we implemented using async builder and await function call.
+ You can study the exact time form here.
+
+-Time taken for the entire process is 10 seconds and 49 milliseconds
+ In this example we launched a co routine in a background thread belong to IO thread pool and did all parallel
+ executions there.
+
+-But we have other options also. We can also provide dispatchers for parallel tasks.
+
+-Let me show you with a code example. Now I am changing this to dispatchers.main . 
+
+-Just add main. Android studio will import dispatchers package.
+
+-After that I am going to provide dispatchers.IO context for each of these aysnc blocks.
+
+-Now only these parallel events will happen in the background .
+
+-SInse this code block executes in the main thread we can add a toast message here to show the total value.
+
+-We can cut the message from here.
+
+-Let’s delete the log. Now we can run the app to see the result.
+
+-We need to wait for 10 seconds to see the result.
+
+-Total is 90000.
+
+-So this is how we implement concurrency with coroutines .
+
+-This is how we use async and await to get data from different data sources parallel and combined the result
