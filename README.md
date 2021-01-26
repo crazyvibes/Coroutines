@@ -279,3 +279,59 @@ Kotilin Coroutines.
 -We have a separate lesson dedicated to introduce structured concurrency . And we will do a lot of coding
  following structured concurrency during this course. But during these earlier lessons,
  until you get familiar with basic concepts we will just do our coding in a unstructured manner.
+ 
+ 
+## switch thread in coroutines
+
+
+-Here, we have created two buttons. When we click on this download user data button
+ it launches a co routine in a background thread and starts a long-running process.
+
+-Here we have written codes for that.
+
+-And when we click on the click here button, we can see the number of clicks on the screen.
+
+-These are the codes we wrote for that process which we created during that previous lesson. Let’s run the app
+ So this is how app works
+
+-Now during this lesson we are going to move one step forward and show these results on the user interface. Instead of
+ logging them we will display them in a TextView. We alrady have a TextView included
+ to the activity_main.xml file for that task with the id tvUserMessage.
+
+-Now in this example our long running task executes in a background thread. And we are going to display
+ the message
+
+-If we write codes to display the message in the textView like this.
+ You know it will not work. 
+
+-In Android.
+ we cannot directly call to a view component running in ui thread from a background thread like this.
+
+-If we run this app now , it will crash showing a CalledFromWrongThreadException .
+
+-Only the original thread that created a view hierarchy can touch its views.
+
+-Therefore we have to call views from the UI thread.But fortunately coroutines has the easiest way to switch
+ between threads. Using with context function we can switch a coroutine from one thread to another.
+
+-Let me show you how to do it. withContext
+ Let’s move this code part to the withContext function block.
+ We need to provide the context here. As we want to switch to main thread, context should be
+ Dispatchers.Main
+
+-There is an another new thing.
+ This withContext function is a suspending function.
+
+-We cannot call to a suspend function from a normal function.
+
+-So we have to add suspend modifier to this function declaration like this.
+
+-For now , don’t worry about suspending functions.
+
+-I have dedicated our next lesson entirely for suspending functions.
+
+-So you will be able to learn every thing about Kotlin suspend functions during the next lesson.
+
+-Now , So let’s just very quickly run this and see it in action
+ .Yes you can see app is working as we expected.
+ So, this is how we switch a coroutine between threads.
