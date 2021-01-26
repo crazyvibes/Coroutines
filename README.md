@@ -335,3 +335,92 @@ Kotilin Coroutines.
 -Now , So let’s just very quickly run this and see it in action
  .Yes you can see app is working as we expected.
  So, this is how we switch a coroutine between threads.
+ 
+ 
+ 
+##Suspending functions:
+
+-In kotlin coroutines, Whenever a coroutine is suspended,
+ the current stack frame of the function is copied and saved in the memory. When the function resumes after
+ completing its task, the stack frame is copied back from where it was saved and starts running again.
+
+-Kotlin coroutines API provides us a lot of functions to make our works easier.
+
+-Almost all of them are suspending functions. 
+ withContext(), 
+ withTimeout(), 
+ withTimeoutOrNull(), 
+ join(), 
+ delay(), 
+ await() 
+ supervisorScope
+ coroutineScope
+
+-There are many suspending functions.
+
+-These are some examples of suspending functions provided by the Kotlin coroutines API.
+
+-Not only coroutines librariy, Other libraries such as room and retrofit also provides suspending funcitons to support us to work
+ with coroutines.
+
+-if we are ever going to call those first class suspending functions from our functions
+ we have to mark our fucntions with suspend modifier.
+
+-Just like we did in the code example of the previous lesson.
+
+-At the end of the previous lesson , when we were going to use Kotlin
+ withContext function , to switch the thread of the coroutine, to display the result on a textview , 
+ We marked this download user data function
+ with Suspend modifier.
+
+-We had to do it, Actually Android studio forced us to do so, because inside that function we were using
+ we were calling, withContext function. Which is a suspending function comes with Kotlinx.Corouintes
+ library.
+
+-If we are going to use a suspending function such as withContext, we have to mark our calling function
+ with suspend modifier.
+
+-And also if we are going to invoke another suspending function created by us , we have to also mark that
+ calling function with suspend modifier. With suspending modifier, we are actually limiting the use of the function
+ only for coroutines .
+
+-A suspending function can be called from a coroutine block or from another suspending function only. 
+ We cannot invoke a suspending function from a normal function or from other places of the code.
+
+-Actually with suspend modifier we label a function as a function with a heavy long running task. And remember
+ a coroutine can invoke both suspending and regular functions , but a suspending function can be invoked by a
+ coroutine only. 
+
+-Well, Now , we are going to see what’s happening under the hood. To see what happen under the hood
+ we need to see Kotlin bytecodes. To do that Let’s create a simple Kotlin class.
+
+-I am including a non-suspending, normal function here. And now Let’s include a suspending function.
+
+-Let’s rebuld the project to generate bytecodes.
+
+-Now, we should go to Tools > Kotlin > Bytecode >
+
+-This is the Kotlin bytecode of our SuspendDemo class. To make it readable we need to decompile it.
+ Click on this DeCompile Button.Ok.
+
+-This is the decompiled java file of our SuspendDemo class. SuspendDemo.decomfiled.java So
+ these are the java interpretations of the generated Kotlin bytecodes of two functions we created.
+
+-Let’s have a look again.
+
+-These are the two functions. firstFunction is a normal function.
+ secondFunction is a suspendable function.
+
+-You can see our suspending function has been converted by the compiler to another function without
+ the suspend keyword, but the compiler has added a new parameter of type Continuation.
+
+-So , What is this Continuation.
+ As you can see Continuation is a Kotlin interface which has all the structure required to resume the
+ suspended function.
+
+-So this is my brief overview about suspending functions. I think these lessons provide all the basic knowledge
+ you need about suspending functions and also provide the background to do your own advanced research
+ on suspending functions.
+
+-If you want . So, we use suspending functions to avoid thread blockings and hence to provide smooth, uninterrupted experience
+
