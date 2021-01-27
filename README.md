@@ -696,3 +696,89 @@ How Suspending Functions Work?
 
 -there is know way to properly handle exceptions. So, even though is seems work well in some scenarios , 
  it is not recommended to use unstructured concurrency.
+ 
+ 
+##Structured concurrency
+
+-All the problems arised during the previous lesson can be easily solved
+ with this coroutine scope function,Notice, this simple 'c' here.
+
+-This is not , this CoroutineScope with capital 'C'
+ This is the interface we used through out this course. This new one is a suspending function. 
+ Which allows us to create a child scope, within a given coroutine scope. This coroutine scope guarantees the
+ completion of the tasks when the suspending function returns. so let me explain this with the coding example.
+
+-I am going to keep this class as an example for unstructured concurrency. Let's create a new class and
+ name it as UserDataManager2, now let's create a suspending function.
+
+-Let's use the same name we used for the other class. We can copy that code from here.
+
+-now Instead of creating coroutines/lauching coroutines using this CoroutineScope interface,
+ I am going to use coroutineScope suspending function inside this new suspending function to provide a child .scope.
+
+-Now we can use launch an async builders inside this child scope.
+ Let's copy the count variable and also the return statement
+
+-now, here, inside this child scope, We can directly use launch coroutine builder to launch a coroutine
+ we can copy the codes from other class.
+
+-if we do not add any dispatcher here, this coroutine will launch in the dispatcher of the parent scope.
+ So in our case, parent scope has Dispatchers.Main,
+
+-So if we are not going to use in any Dispatcher here, This coroutine will run in the main thread. But we don't
+ want to do that. So let's add a dispatcher here.
+
+-Dispatchers.IO. All right, now let's launch the async builder.
+
+-I'm going to copy the code from the other class. We can copy this entire part and remove this CoroutineScope interface.
+ and here, we can provide the dispatcher.
+
+-this time, we need to declare this deferred, outside of this scope because we need to get that value from here.
+ Let's declare it here.
+
+-We are going to initialize a deferred later.
+
+-So I'm going to use lateinit keyword. lateinit var deferred . This is a deferred instance. And its type is int.
+
+-now, we can assign that to this returned value.
+
+-All right, what will happen if we run this app ? This coroutineScope Interface guarantees the 
+ completion of all the tasks within the child scope provided by it before the return of the function.
+
+-So, once we call to this get total user count function, before it returns to the caller
+ all the coroutines launched within this scope will complete. So, let's switch back to
+ MainActivity now. Let's duplicate this statement. Control + D . And I am commenting this one.
+
+-Now. Let's make this as UserDataManager2.So we'll be able to call to new function.
+
+-We just created, during the previous lesson, we had only 70 as the answer. Because of the problems arised with
+ unstructured concurrency.
+
+-Now, let's see what is the result of this structured concurrency code.
+
+-So, we are supposed to get 50 + 70,120 as the answer So, let's run that and see how it works.
+
+-All right.Now I'm going to click on the download user data button.
+
+-Good. as we expected, this time we got 120 as the answer.
+
+-So this time our suspending function working properly. Working as we intended.
+
+-Now, here, because of this coroutineScope starting with 'c' . This coroutineScope suspending
+ function. we can have a child scope, which is under the control of parent scope created in the main activity.
+
+-So this is the recommended best practice. When you have more than one coroutines, you should always start with
+ the Dispatchers.Main . You should always start with the CoroutineScope interface. And inside suspending functions
+ you should use coroutineScope function which starts with the simple 'c' to provide a child scope.
+
+-So this is structured concurrency. Structured concurrency guarantees to complete all the work started
+ by coroutines, within the child scope, before the return of the suspending function. Actually
+
+-This coroutineScope Wait for the child coroutines to complete. Not only that ,there are other benefits of this structured concurrency.
+
+-When errors happen, when exceptions thrown, structured concurrency guarantees to notify the caller
+
+-So we can handle exceptions easily and effectively, We can also use a structured concurrency to cancel tasks
+ we started. If we cancel entire child scope, all the works happening inside that scope will be canceled.
+
+-We can also cancel coroutines separately.

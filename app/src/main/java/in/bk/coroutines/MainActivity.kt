@@ -25,11 +25,14 @@ class MainActivity : AppCompatActivity() {
 //              //  downloadUserData2()
 //            }
                 //for unstructured concurrency
+//            CoroutineScope(Dispatchers.Main).launch {
+//                tvUserMessage.text = UserDataManager().getTotalUserCount2().toString()
+//            }
+
+            //for structured concurrency
             CoroutineScope(Dispatchers.Main).launch {
-                tvUserMessage.text = UserDataManager().getTotalUserCount2().toString()
+                tvUserMessage.text = UserDataManger2().getTotalUserCount().toString()
             }
-
-
         }
 
 
