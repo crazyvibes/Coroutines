@@ -21,9 +21,14 @@ class MainActivity : AppCompatActivity() {
         }
         btnDownloadUserData.setOnClickListener {
 
-            CoroutineScope(Dispatchers.IO).launch {
-                downloadUserData2()
+//            CoroutineScope(Dispatchers.IO).launch {
+//              //  downloadUserData2()
+//            }
+                //for unstructured concurrency
+            CoroutineScope(Dispatchers.Main).launch {
+                tvUserMessage.text = UserDataManager().getTotalUserCount2().toString()
             }
+
 
         }
 
@@ -59,14 +64,14 @@ class MainActivity : AppCompatActivity() {
 
 
         //with main
-        CoroutineScope(Main).launch {
-            Log.i("TAG", "Calculation is started")
-            val stock1=async(IO) { getStock1() }
-            val stock2=async(IO) { getStock2() }
-            val total=stock1.await()+stock2.await()
-            Toast.makeText(applicationContext,"Total is $total",Toast.LENGTH_LONG).show()
-            //Log.i("TAG", "Total is $total")
-        }
+//        CoroutineScope(Main).launch {
+//            Log.i("TAG", "Calculation is started")
+//            val stock1=async(IO) { getStock1() }
+//            val stock2=async(IO) { getStock2() }
+//            val total=stock1.await()+stock2.await()
+//            Toast.makeText(applicationContext,"Total is $total",Toast.LENGTH_LONG).show()
+//            //Log.i("TAG", "Total is $total")
+//        }
     }
 
     private fun downloadUserData() {

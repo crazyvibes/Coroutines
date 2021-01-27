@@ -599,4 +599,100 @@ How Suspending Functions Work?
 
 -So this is how we implement concurrency with coroutines .
 
--This is how we use async and await to get data from different data sources parallel and combined the result
+-This is how we use async and await to get data from different data sources parallel and combined the result.
+
+
+##Unstructured Concurrency
+
+-There are situations we need to launch more than one coroutines concurrently in a suspending function 
+ and get some result returned from the function.
+
+-There are two ways to do this , We call them structured concurrency and unstructured concurrency. 
+
+-During this lesson we are going to talk about unstructured concurrency.
+
+-This is the wrong way to do it. I have seen, some junior developers doing this without knowing the consequences.
+
+-So, I created this lesson to show you, what is wrong with the unstructured concurrency. After knowing it
+ properly, during the next lesson, you will be able to learn about the correct way to run multiple coroutines
+ in a suspending function.
+
+-Now this is what I am going to do.
+
+-I am going to create a new Kotlin class and name it as UserDataManager1. In that class
+ I am going to create a suspending function which returns an int value calculated using results
+ of two concurrent operations .
+
+-I am going to call that new suspending function from the main activity and display the returned value in
+ the TextView.
+
+-So, let’s create a new Kotlin class and name it as UserDataManager1.
+ Now, here I am creating a new suspending function.
+
+-Let’s name it as getTotalUserCount, Return type should be int.
+
+-Let’s define an int variable and assign value 0 to it.
+
+-In kotlin, we don’t need to mention the data type, Kotlin will automatically recognize the data type..
+
+-Now, as we learnt during previous lessons, let’s launch a new coroutine in IO dispatcher.
+
+-To simulate a long running task I am delaying this coroutine for one second.
+
+-Then, let’s set value 50 to the count variable.
+
+-Finally we will return the count value.
+
+-Now, let’s switch back to the MainActivity. Here in the MainActivity,
+ We can use this click event to show the returned count value
+ in the textVIew. Let’s remove this method call. Id of the textview is tvUserMessage
+ tvUserMessage.text equals UserDataManager().getTotalUserCount() dot toString()
+
+-We should also change the dispatcher of this coroutine to Main.
+ Otherwise we will not be able to show value on the textview.
+
+-What would happen if we run this app and click on the button. Here
+ the initial count value is 0. But By the time this coroutine completes, corouinte will assign 50 to the
+ count value.
+
+-So we are expecting this function to return 50 as the count value. Let’s run the app and see how it works.
+ I am going to click on the button.We got zero as the returned value.
+
+-Returned value supposed to be 50. But we received 0. Here this coroutine scope crates a new coroutine
+ which behaves separately from this parent coroutine in the main activity.
+
+-So this function reaches to the end and returns this count variable’s value before the completion of the
+ coroutine.
+
+-Because of that reason instead of 50 we got 0 as the result. This is a one weakness of unstructured concurrency. 
+ Unstructured Concurrency Does not guarantee to complete all the tasks of the suspending function, before it returns.
+
+-Actually , the child coroutines can be still running, even after the completion of the parent coroutine.
+ As a result of that there can be unpredictable errors , specially if we use launch coroutine builder like we just did.
+
+-But, if you use async builder and if you use await function call for the return value, you might be able to get
+ the expected result of the async coroutine.
+
+-Now, I am going to lauch another coroutine with async builder.
+ I am delaying this for 3 seconds.
+
+-This time let’s return 70. Since we return from an async block, we use return@async here instead of return.
+
+-Let’s assign the returned value to a variable.
+
+-Then, here we can use await to get the returned value.
+
+-Now when this return statement completes. Kotlin runtime will come to this place immediately with value 0.
+ but it has to wait 3 seconds until the async block completes to get this deffered value and to complete the 
+ return statement. So now this statement will return 70 .
+
+-Let’s run that app and see this in action. Yes as we expected, this time the function returns 70 after 3 seconds delay.
+
+-Does this means, unstructured concurrency is ok, with async builders.
+ No, still there are problems.You know, In android if there is an error happen in a function, the function throws an exception.
+
+-So we can catch the exception in the caller function and handle the situation. In unstuructured comcurrency
+ weather we use lauch or async builders ,
+
+-there is know way to properly handle exceptions. So, even though is seems work well in some scenarios , 
+ it is not recommended to use unstructured concurrency.
